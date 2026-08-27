@@ -19,6 +19,26 @@ This is the publishable npm package. Changes here affect everyone who installs `
 - Consider: Does this affect the API surface?
 - Consider: Will existing users' code still work?
 
+## React 16 Support
+
+The package supports React >= 16.8. Four things keep that working - don't undo them:
+
+1. **Classic JSX transform.** `tsup.config.ts` replaces the tsconfig inline so esbuild
+   emits `React.createElement` (injected via `react-shim.js`). `react/jsx-runtime` only
+   ships from React 16.14. `scripts/assert-react16-safe.mjs` fails the build if it comes back.
+2. **No React 18-only hooks.** `useId`, `useSyncExternalStore`, `useTransition`,
+   `useDeferredValue`, `useInsertionEffect` are off limits without a fallback
+   (see `useStableId` in `settings-panel/checkbox-field`).
+3. **ES2017 output target.** React 16-era apps usually run webpack 4 (CRA 4,
+   Next 9/10), whose acorn cannot parse `?.` / `??`. Same guard script checks this.
+4. **Event delegation root.** React < 17 delegates synthetic events at `document`,
+   React 17+ at the root container. The toolbar's `stopPropagation` guard picks its
+   target from `LEGACY_EVENT_DELEGATION` in `page-toolbar-css/index.tsx`.
+
+Manual check (needs a scratch dir with `react@16` + `react-dom@16` + `jsdom`):
+render `dist/index.js` with `ReactDOM.render`, then confirm a click on
+`[title="Start feedback mode"]` expands the toolbar.
+
 ## Main Export
 
 ```tsx

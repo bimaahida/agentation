@@ -126,8 +126,13 @@ Agentation captures class names, selectors, and element positions so AI agents c
 
 ## Requirements
 
-- React 18+
+- React 16.8+ (hooks). React 16/17 work, React 18+ recommended
+- Bundle is ES2017, so webpack 4 (CRA 4, Next 9/10) can parse it
 - Desktop browser (mobile not supported)
+
+On React 16 the toolbar shields window-level "click outside" handlers only, not
+document-level ones - React 16 delegates its own events at `document`, so the
+toolbar cannot stop propagation there without breaking the host app.
 
 ## Docs
 

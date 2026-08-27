@@ -30,6 +30,16 @@ function isMajorVersion(version: string): boolean {
 
 const releases: Release[] = [
   {
+    version: "3.1.0",
+    date: "August 27, 2026",
+    summary: <>Agentation now runs on React 16 and 17, not just 18+. If your app is on an older React or an older bundler, it works now.</>,
+    changes: [
+      { type: "added", text: <>React 16.8+ support — the toolbar runs on React 16, 17, and 18+</> },
+      { type: "improved", text: <>Bundle ships as ES2017 and uses the classic JSX transform, so webpack 4 toolchains (CRA 4, Next 9/10) can parse it</> },
+      { type: "fixed", text: <>On React 16 the toolbar no longer swallows the host app&apos;s synthetic events — React 16 delegates events at <code>document</code>, so the click guard attaches there instead of <code>body</code></> },
+    ],
+  },
+  {
     version: "3.0.2",
     date: "March 24, 2026",
     changes: [

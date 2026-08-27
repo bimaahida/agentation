@@ -1,6 +1,6 @@
 {
   "name": "agentation",
-  "version": "3.0.2",
+  "version": "3.1.0",
   "description": "Visual feedback for AI coding agents",
   "sideEffects": false,
   "license": "PolyForm-Shield-1.0.0",
@@ -24,7 +24,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && node scripts/assert-react16-safe.mjs",
     "watch": "tsup --watch",
     "dev": "pnpm build && pnpm watch",
     "test": "vitest run",
@@ -32,8 +32,8 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "react": ">=18.0.0",
-    "react-dom": ">=18.0.0"
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
   },
   "peerDependenciesMeta": {
     "react": {

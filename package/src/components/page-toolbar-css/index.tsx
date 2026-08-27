@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useLayoutEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useLayoutEffect, useRef, version as reactVersion } from "react";
 import { createPortal } from "react-dom";
 
 import {
@@ -262,6 +262,10 @@ function isElementFixed(element: HTMLElement): boolean {
   return false;
 }
 
+// React < 17 attaches its synthetic event listeners to `document`.
+// NaN (unknown version) falls through to the modern behaviour.
+const LEGACY_EVENT_DELEGATION = parseInt(reactVersion, 10) < 17;
+
 function isRenderableAnnotation(annotation: Annotation): boolean {
   return annotation.status !== "resolved" && annotation.status !== "dismissed";
 }
@@ -360,9 +364,16 @@ export function PageFeedbackToolbarCSS({
       }
     };
     const events = ["mousedown", "click", "pointerdown"] as const;
-    events.forEach((evt) => document.body.addEventListener(evt, stop));
+    // React 16 delegates synthetic events at `document`, which sits above body:
+    // stopping at body there would swallow every synthetic event in the app,
+    // including the toolbar's own. React 17+ delegates at the root container
+    // (below body), so body is safe.
+    // ponytail: on React 16 this only shields window-level listeners, document-level
+    // "click outside" handlers still fire. Upgrade path: React >= 17.
+    const target: EventTarget = LEGACY_EVENT_DELEGATION ? document : document.body;
+    events.forEach((evt) => target.addEventListener(evt, stop));
     return () => {
-      events.forEach((evt) => document.body.removeEventListener(evt, stop));
+      events.forEach((evt) => target.removeEventListener(evt, stop));
     };
   }, []);
 

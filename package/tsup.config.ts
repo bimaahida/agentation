@@ -87,12 +87,25 @@ export default defineConfig((options) => [
   {
     entry: ["src/index.ts"],
     format: ["cjs", "esm"],
+    // ES2017: React 16-era consumers are usually on webpack 4 (CRA 4, Next 9/10),
+    // whose acorn cannot parse `?.` / `??`. Also keeps the bundle loadable on Node 16.
+    target: "es2017",
     dts: true,
     splitting: false,
     sourcemap: true,
     clean: !options.watch,
     external: ["react", "react-dom"],
     esbuildPlugins: [scssModulesPlugin()],
+    // Classic JSX transform + injected React: `react/jsx-runtime` (the automatic
+    // transform) only ships in React >= 16.14, React.createElement works on all 16.x.
+    // esbuild takes `jsx` from tsconfig.json over the API option, so the tsconfig
+    // has to be replaced inline (the file only sets jsx for esbuild's purposes;
+    // tsc/dts still reads tsconfig.json and keeps using react-jsx).
+    esbuildOptions(opts) {
+      opts.tsconfig = undefined;
+      opts.tsconfigRaw = { compilerOptions: { jsx: "react", target: "ES2017" } };
+      opts.inject = [...(opts.inject ?? []), path.resolve("react-shim.js")];
+    },
     define: {
       __VERSION__: JSON.stringify(VERSION),
     },
