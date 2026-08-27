@@ -1,9 +1,9 @@
 # Dependencies
 node_modules/
-dist/*
 
-# Build output (dist is committed for Vercel deployment)
-# dist/
+# Build output stays out of branch history. scripts/release-tag.sh force-adds it
+# into the release tag's tree only (see AGENTS.md).
+dist/
 
 # Next.js (example app)
 .next/

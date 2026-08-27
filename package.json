@@ -2,6 +2,13 @@
   "name": "agentation-monorepo",
   "version": "0.0.1",
   "private": true,
+  "files": [
+    "package/package.json",
+    "package/dist",
+    "package/README.md",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "dev": "pnpm --filter agentation watch & pnpm --filter feedback-tool-example dev",
     "build": "pnpm --filter agentation build",
