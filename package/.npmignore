@@ -1,3 +1,0 @@
-# npm prefers this over .gitignore when packing, and .gitignore excludes dist/.
-# dist is the published output and must ship.
-example/

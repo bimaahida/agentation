@@ -1,6 +1,6 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="package/logo-dark.svg">
-  <img src="package/logo.svg" alt="Agentation" width="200">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/benjitaylor/agentation/main/package/logo-dark.svg">
+  <img src="https://raw.githubusercontent.com/benjitaylor/agentation/main/package/logo.svg" alt="Agentation" width="200">
 </picture>
 
 <br>
@@ -41,8 +41,84 @@ The toolbar appears in the bottom-right corner. Click to activate, then click an
 - **Area selection** – Drag to annotate any region, even empty space
 - **Animation pause** – Freeze all animations (CSS, JS, videos) to capture specific states
 - **Structured output** – Copy markdown with selectors, positions, and context
-- **Dark/light mode** – Matches your preference or set manually
+- **Programmatic access** – Callback prop for direct integration with tools
+- **Dark/light mode** – Toggle in settings, persists to localStorage
 - **Zero dependencies** – Pure CSS animations, no runtime libraries
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `onAnnotationAdd` | `(annotation: Annotation) => void` | - | Called when an annotation is created |
+| `onAnnotationDelete` | `(annotation: Annotation) => void` | - | Called when an annotation is deleted |
+| `onAnnotationUpdate` | `(annotation: Annotation) => void` | - | Called when an annotation is edited |
+| `onAnnotationsClear` | `(annotations: Annotation[]) => void` | - | Called when all annotations are cleared |
+| `onCopy` | `(markdown: string) => void` | - | Callback with markdown output when copy is clicked |
+| `onSubmit` | `(output: string, annotations: Annotation[]) => void` | - | Called when "Send Annotations" is clicked |
+| `copyToClipboard` | `boolean` | `true` | Set to false to prevent writing to clipboard |
+| `endpoint` | `string` | - | Server URL for Agent Sync (e.g., `"http://localhost:4747"`) |
+| `sessionId` | `string` | - | Pre-existing session ID to join |
+| `onSessionCreated` | `(sessionId: string) => void` | - | Called when a new session is created |
+| `webhookUrl` | `string` | - | Webhook URL to receive annotation events |
+
+### Programmatic Integration
+
+Use callbacks to receive annotation data directly:
+
+```tsx
+import { Agentation, type Annotation } from 'agentation';
+
+function App() {
+  const handleAnnotation = (annotation: Annotation) => {
+    // Structured data - no parsing needed
+    console.log(annotation.element);      // "Button"
+    console.log(annotation.elementPath);  // "body > div > button"
+    console.log(annotation.boundingBox);  // { x, y, width, height }
+    console.log(annotation.cssClasses);   // "btn btn-primary"
+
+    // Send to your agent, API, etc.
+    sendToAgent(annotation);
+  };
+
+  return (
+    <>
+      <YourApp />
+      <Agentation
+        onAnnotationAdd={handleAnnotation}
+        copyToClipboard={false}  // Don't write to clipboard
+      />
+    </>
+  );
+}
+```
+
+### Annotation Type
+
+```typescript
+type Annotation = {
+  id: string;
+  x: number;                    // % of viewport width
+  y: number;                    // px from top of document (absolute) OR viewport (if isFixed)
+  comment: string;              // User's note
+  element: string;              // e.g., "Button"
+  elementPath: string;          // e.g., "body > div > button"
+  timestamp: number;
+
+  // Optional metadata (when available)
+  selectedText?: string;
+  boundingBox?: { x: number; y: number; width: number; height: number };
+  nearbyText?: string;
+  cssClasses?: string;
+  nearbyElements?: string;
+  computedStyles?: string;
+  fullPath?: string;
+  accessibility?: string;
+  isMultiSelect?: boolean;
+  isFixed?: boolean;
+};
+```
+
+> **Note:** This is a simplified type. The full type includes additional fields for Agent Sync (`url`, `status`, `thread`, `reactComponents`, etc.). See [agentation.com/schema](https://agentation.com/schema) for the complete schema.
 
 ## How it works
 
@@ -50,8 +126,13 @@ Agentation captures class names, selectors, and element positions so AI agents c
 
 ## Requirements
 
-- React 18+
+- React 16.8+ (hooks). React 16/17 work, React 18+ recommended
+- Bundle is ES2017, so webpack 4 (CRA 4, Next 9/10) can parse it
 - Desktop browser (mobile not supported)
+
+On React 16 the toolbar shields window-level "click outside" handlers only, not
+document-level ones - React 16 delegates its own events at `document`, so the
+toolbar cannot stop propagation there without breaking the host app.
 
 ## Docs
 

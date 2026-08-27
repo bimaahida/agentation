@@ -1,21 +1,38 @@
 {
-  "name": "agentation-monorepo",
-  "version": "0.0.1",
-  "private": true,
-  "scripts": {
-    "dev": "pnpm --filter agentation watch & pnpm --filter feedback-tool-example dev",
-    "build": "pnpm --filter agentation build",
-    "example": "pnpm --filter feedback-tool-example dev",
-    "pack": "cd package && pnpm pack",
-    "mcp": "pnpm --filter agentation-mcp start",
-    "publish:agentation": "pnpm --filter agentation publish --access public",
-    "publish:mcp": "pnpm --filter agentation-mcp publish --access public",
-    "publish:all": "pnpm publish:agentation && pnpm publish:mcp"
+  "name": "agentation",
+  "version": "3.1.0",
+  "description": "Visual feedback for AI coding agents",
+  "sideEffects": false,
+  "license": "PolyForm-Shield-1.0.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "better-sqlite3",
-      "esbuild"
-    ]
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
   }
 }
