@@ -20,27 +20,28 @@ pnpm build      # Build package only
 ## Releases
 
 This fork is consumed with `npm install github:<owner>/<repo>#vX.Y.Z`, not from
-the npm registry. npm cannot install a monorepo subdirectory, so it packs the
-repo root - which means the build output has to be present in the tree a
-consumer installs.
+the npm registry. npm cannot install a monorepo subdirectory, so the tag cannot
+just point at a branch commit.
 
-`dist/` stays out of branch history. `scripts/release-tag.sh` builds, then uses
-`git commit-tree` against a throwaway index to create a release commit that adds
-only `package/dist/index.{js,mjs,d.ts,d.mts}` on top of HEAD, and tags it. The
-branch, the index, and the working tree are never touched, and sourcemaps are
-left out to keep the install small.
+`scripts/release-tag.sh` builds, then assembles a tree from scratch with the
+package at its root - `package.json`, `dist/`, README, LICENSE, nothing else -
+and tags a commit carrying that tree. Consumers get `node_modules/agentation`
+directly: no symlink, no source, no build at install time. GitHub's source
+archive for the tag is the same lean tree. `devDependencies` and `scripts` are
+stripped from the released `package.json`, because npm installs a git
+dependency's devDependencies whenever it has to run `prepare` - that would pull
+a second copy of React into the consumer's tree and break hooks.
+
+The release commit keeps the branch commit as its parent for traceability but
+shares none of its tree, so `dist/` stays out of branch history.
 
 ```bash
 scripts/release-tag.sh      # tags vX.Y.Z from package/package.json
 git push origin vX.Y.Z      # the script prints this, it does not push for you
 ```
 
-What ships is controlled by `files` in the root `package.json` plus
-`package/.npmignore` (npm prefers `.npmignore` over `.gitignore`, which excludes
-`dist/`). Roughly 1.3 MB across 10 files.
-
 Consumers must pin the tag. `npm install github:<owner>/<repo>` with no ref
-resolves to the default branch, which has no `dist/` and will not work.
+resolves to the default branch, which has no build output.
 
 ## Important
 

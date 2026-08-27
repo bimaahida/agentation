@@ -1,4 +1,3 @@
 # npm prefers this over .gitignore when packing, and .gitignore excludes dist/.
-# dist must ship: it is the published output, and this fork is also consumed by
-# git tag (see scripts/release-tag.sh), where the tag's tree carries the build.
+# dist is the published output and must ship.
 example/
