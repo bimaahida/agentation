@@ -50,7 +50,7 @@ Agentation captures class names, selectors, and element positions so AI agents c
 
 ## Requirements
 
-- React 18+
+- React 13+
 - Desktop browser (mobile not supported)
 
 ## Docs
