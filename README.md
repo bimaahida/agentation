@@ -13,7 +13,7 @@
 ## Install
 
 ```bash
-npm install agentation -D
+npm install -D github:bimaahida/agentation#v3.1.0
 ```
 
 ## Usage
